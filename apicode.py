@@ -1,9 +1,14 @@
 from fastapi import FastAPI
-from mlmodel import model
+from fastapi import Depends
+from sqlalchemy.orm import  Session
 from databaseconnection import SessionLocal
+import datamodel
 from pydantic import BaseModel
+import pickle
 
 app = FastAPI()
+
+pickled_model = pickle.load(open('fish_model.pkl', 'rb'))
 
 class fishsample(BaseModel):
     Weight: float
@@ -13,19 +18,19 @@ class fishsample(BaseModel):
     Height: float
     Width: float
 
-#def get_db():
-#    db=SessionLocal()
-#    try:
-#        yield db
-#    finally:
-#        db.close()
-
 @app.get('/')
-def firstword():
-    return{'Hello People'}
+def fristpage():
+    return{'Hello World'}    
+
+def get_db():
+    db=SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.post('/fishspecpred')
-async def fishspecpred(parameters:fishsample): #, db:Session=Depends(get_db)):
+async def fishspecpred(parameters:fishsample, db:Session=Depends(get_db)):
     test_data_init = [[
              parameters.Weight,
              parameters.Length1,
@@ -34,8 +39,8 @@ async def fishspecpred(parameters:fishsample): #, db:Session=Depends(get_db)):
              parameters.Height,
              parameters.Width
     ]]
-    prediction = model.predict(test_data_init)[0]
-    #new_fishtestdata = datamodel.database1(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
-    #db.add(new_fishtestdata)
-    #db.commit()
+    prediction = pickled_model.predict(test_data_init)[0]
+    new_fishtestdata = datamodel.database1(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
+    db.add(new_fishtestdata)
+    db.commit()
     return{'Species is': prediction}
