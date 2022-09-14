@@ -5,6 +5,7 @@ from databaseconnection import SessionLocal
 import datamodel
 from pydantic import BaseModel
 import pickle
+import mlmodel
 
 app = FastAPI()
 
@@ -20,7 +21,7 @@ class fishsample(BaseModel):
 
 @app.get('/')
 def fristpage():
-    return{'Hello World'}    
+    return{'Hello World'}
 
 def get_db():
     db=SessionLocal()

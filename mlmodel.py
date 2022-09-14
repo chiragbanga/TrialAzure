@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-import mysql.connector
-from databaseconnection import engine, username_db, password_db, host_server, db_server_port, database_name
 import pickle
+from databaseconnection import engine, username_db, password_db, host_server, db_server_port, database_name
+import mysql.connector
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
