@@ -7,3 +7,7 @@ pydantic
 sklearn
 python-multipart
 mysql-connector-python
+urllib3
+uvloop
+httptools
+psycopg2-binary
