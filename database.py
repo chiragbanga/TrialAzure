@@ -4,17 +4,11 @@ from sqlalchemy.orm import sessionmaker
 import os
 import urllib
 
-#SQLALCHEMY_DATABASE_URL = "sqlite:///./fish.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-
-username_db = str(os.environ.get('username_db', 'postgres'))
-password_db = str(os.environ.get('password_db', 'password'))
-
 host_server = os.environ.get('host_server', 'localhost')
 db_server_port = urllib.parse.quote_plus(str(os.environ.get('db_server_port', '3306')))
 database_name = os.environ.get('database_name', 'fastapi_app')
 db_username = urllib.parse.quote_plus(str(os.environ.get('db_username', 'postgres')))
-db_password = urllib.parse.quote_plus(str(os.environ.get('db_password', 'password')))
+db_password = urllib.parse.quote_plus(str(os.environ.get('db_password', 'secret')))
 SQLALCHEMY_DATABASE_URL='mysql+mysqlconnector://{}:{}@{}:{}/{}'.format(db_username,db_password,host_server,db_server_port,database_name)
 
 engine = create_engine(
