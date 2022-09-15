@@ -54,7 +54,7 @@ async def fishspecpred(parameters:fishsample, db:Session=Depends(get_db)):
              parameters.Width
     ]]
     prediction = model.predict(test_data_init)[0]
-    new_fishtestdata = models.database1(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
+    new_fishtestdata = models.fastapi_app(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
     db.add(new_fishtestdata)
     db.commit()
     return{'Species is': prediction}
