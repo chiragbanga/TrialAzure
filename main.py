@@ -4,12 +4,9 @@ from sqlalchemy.orm import  Session
 from database import SessionLocal
 import models
 from pydantic import BaseModel
-import pickle
-import mlmodel
+from mlmodel import model
 
 app = FastAPI()
-
-pickled_model = pickle.load(open('fish_model.pkl', 'rb'))
 
 class fishsample(BaseModel):
     Weight: float
@@ -40,7 +37,7 @@ async def fishspecpred(parameters:fishsample, db:Session=Depends(get_db)):
              parameters.Height,
              parameters.Width
     ]]
-    prediction = pickled_model.predict(test_data_init)[0]
+    prediction = model.predict(test_data_init)[0]
     new_fishtestdata = models.database1(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
     db.add(new_fishtestdata)
     db.commit()

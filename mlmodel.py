@@ -24,5 +24,3 @@ X = df_fish.drop('Species', axis=1)
 
 logistic_model = LogisticRegression()
 model = logistic_model.fit(X,y)
-
-pickle.dump(logistic_model, open('fish_model.pkl', 'wb'))
