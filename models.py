@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, String, Integer, Float, Column
-from databaseconnection import Base
+from database import Base
 
 class database1(Base):
     __tablename__ = "fishtestdata"

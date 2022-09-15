@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pickle
-from databaseconnection import engine, username_db, password_db, host_server, db_server_port, database_name
+from database import engine, username_db, password_db, host_server, db_server_port, database_name
 import mysql.connector
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -10,7 +10,7 @@ db = engine
 
 connection = mysql.connector.connect(
     user=username_db, password=password_db,
-    host=host_server, port=3306,
+    host=host_server, port=db_server_port,
     database=database_name
 )
 c = connection.cursor()
