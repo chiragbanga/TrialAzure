@@ -11,8 +11,7 @@ db_username = urllib.parse.quote_plus(str(os.environ.get('db_username', 'postgre
 db_password = urllib.parse.quote_plus(str(os.environ.get('db_password', 'secret')))
 SQLALCHEMY_DATABASE_URL='mysql+mysqlconnector://{}:{}@{}:{}/{}'.format(db_username,db_password,host_server,db_server_port,database_name)
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,pool_size=3, max_overflow=0
+engine = create_engine(SQLALCHEMY_DATABASE_URL,pool_size=3, max_overflow=0
     #, connect_args={"check_same_thread": False}
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
