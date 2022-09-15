@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, String, Integer, Float, Column
 from database import Base
 
-class database1(Base):
+class fastapi_app(Base):
     __tablename__ = "fishtestdata"
     Id = Column(Integer, primary_key=True,index=True)
     Weight = Column(Float)
