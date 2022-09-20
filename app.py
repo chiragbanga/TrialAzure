@@ -7,7 +7,6 @@ from sqlalchemy.orm import  Session
 from database import SessionLocal
 import models
 from pydantic import BaseModel
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
 app = FastAPI()
@@ -29,7 +28,7 @@ y = df_fish['Species']
 X = df_fish.drop('Species', axis=1)
 #X = df_fish[['Weight', 'Length1', 'Length2', 'Length3', 'Height', 'Width']]
 
-logistic_model = LogisticRegression()
+logistic_model = LogisticRegression(C=0.0001, max_iter=1000, penalty='none', solver='saga')
 model = logistic_model.fit(X,y)
 
 @app.get('/')
