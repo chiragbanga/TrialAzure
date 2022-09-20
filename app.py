@@ -1,15 +1,22 @@
 import numpy as np
 import pandas as pd
 from database import engine
-from fastapi import FastAPI
+from fastapi import FastAPI,Request,Form, status
 from fastapi import Depends
-from sqlalchemy.orm import  Session
 from database import SessionLocal
 import models
 from pydantic import BaseModel
 from sklearn.linear_model import LogisticRegression
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from sqlalchemy.orm import  Session
 
 app = FastAPI()
+
+models.Base.metadata.create_all(engine)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 class fishsample(BaseModel):
     Weight: float
@@ -42,18 +49,45 @@ def get_db():
     finally:
         db.close()
 
-@app.post('/fishspecpred')
-async def fishspecpred(parameters:fishsample, db:Session=Depends(get_db)):
-    test_data_init = [[
-             parameters.Weight,
-             parameters.Length1,
-             parameters.Length2,
-             parameters.Length3,
-             parameters.Height,
-             parameters.Width
-    ]]
-    prediction = model.predict(test_data_init)[0]
-    new_fishtestdata = models.fastapi_app(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
+@app.get("/frontend", response_class=HTMLResponse)
+async def read_item(request: Request):
+    weight = ""
+    length1=""
+    length2=''
+    length3=''
+    height=''
+    width=''
+    species=''
+    return templates.TemplateResponse("item.html",context={'request': request, 'weight': weight,'length1':length1,'length2':length2,'length3':length3,'height':height,'width':width,'species':species})
+
+@app.post("/frontend")
+def form_post(request: Request, Weight: float = Form(...),Length1:float=Form(...),Length2:float=Form(...),Length3:float=Form(...),Height:float=Form(...),Width:float=Form(...), db:Session=Depends(get_db)):
+    weight =Weight
+    length1=Length1
+    length2=Length2
+    length3=Length3
+    height=Height
+    width=Width
+    test_data = [[weight, length1, length2,length3, height, width]]
+    class_idx = logistic_model.predict(test_data)[0]
+    species = class_idx
+    new_fishtestdata = models.fastapi_app(Weight=weight,Length1=length1,Length2=length2,Length3=length3,Height=height,Width=width,Species=species)
     db.add(new_fishtestdata)
     db.commit()
-    return{'Species is': prediction}
+    return templates.TemplateResponse('item.html', context={'request': request, 'weight': weight,'length1':length1,'length2':length2,'length3':length3,'height':height,'width':width,'species':species})
+
+#@app.post('/fishspecpred')
+#sync def fishspecpred(parameters:fishsample,status_code=status.HTTP_201_CREATED):
+#    test_data_init = [[
+#             parameters.Weight,
+#             parameters.Length1,
+#             parameters.Length2,
+#             parameters.Length3,
+#             parameters.Height,
+#             parameters.Width
+#    ]]
+#    prediction = model.predict(test_data_init)[0]
+#    new_fishtestdata = models.fastapi_app(Weight=parameters.Weight,Length1=parameters.Length1,Length2=parameters.Length2,Length3=parameters.Length3,Height=parameters.Height,Width=parameters.Width,Species=prediction)
+#    db.add(new_fishtestdata)
+#    db.commit()
+#    return{'Species is': prediction}
