@@ -6,11 +6,11 @@ from fastapi import Depends
 from database import SessionLocal
 import models
 from pydantic import BaseModel
-from sklearn.linear_model import LogisticRegression
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import  Session
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 app = FastAPI()
 
@@ -35,7 +35,7 @@ y = df_fish['Species']
 X = df_fish.drop('Species', axis=1)
 #X = df_fish[['Weight', 'Length1', 'Length2', 'Length3', 'Height', 'Width']]
 
-logistic_model = LogisticRegression(C=0.0001, max_iter=1000, penalty='none', solver='saga')
+logistic_model = LinearDiscriminantAnalysis() #LogisticRegression(C=0.0001, max_iter=1000, penalty='none', solver='saga')
 model = logistic_model.fit(X,y)
 
 @app.get('/')
@@ -61,7 +61,7 @@ async def read_item(request: Request):
     return templates.TemplateResponse("item.html",context={'request': request, 'weight': weight,'length1':length1,'length2':length2,'length3':length3,'height':height,'width':width,'species':species})
 
 @app.post("/frontend")
-def form_post(request: Request, Weight: float = Form(...),Length1:float=Form(...),Length2:float=Form(...),Length3:float=Form(...),Height:float=Form(...),Width:float=Form(...), db:Session=Depends(get_db)):
+def form_post(request: Request, Weight: float = Form(...),Length1:float=Form(...),Length2:float=Form(...),Length3:float=Form(...),Height:float=Form(...),Width:float=Form(...), db1:Session=Depends(get_db)):
     weight =Weight
     length1=Length1
     length2=Length2
@@ -72,8 +72,8 @@ def form_post(request: Request, Weight: float = Form(...),Length1:float=Form(...
     class_idx = logistic_model.predict(test_data)[0]
     species = class_idx
     new_fishtestdata = models.fastapi_app(Weight=weight,Length1=length1,Length2=length2,Length3=length3,Height=height,Width=width,Species=species)
-    db.add(new_fishtestdata)
-    db.commit()
+    db1.add(new_fishtestdata)
+    db1.commit()
     return templates.TemplateResponse('item.html', context={'request': request, 'weight': weight,'length1':length1,'length2':length2,'length3':length3,'height':height,'width':width,'species':species})
 
 #@app.post('/fishspecpred')
